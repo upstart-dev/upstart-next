@@ -1,4 +1,3 @@
-// app/api/events/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 interface EventbriteEvent {
@@ -101,11 +100,17 @@ export async function GET(request: NextRequest) {
           status: isPast ? 'finished' : 'upcoming',
         };
       })
-      .filter((event): event is FormattedEvent => event !== null);
+      .filter((event: FormattedEvent | null): event is FormattedEvent => event !== null);
 
     return NextResponse.json(events);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching events from Eventbrite:', error);
-    return NextResponse.json({ error: 'Error fetching events', details: error.message }, { status: 500 });
+    
+    let errorMessage = 'An unknown error occurred';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json({ error: 'Error fetching events', details: errorMessage }, { status: 500 });
   }
 }
