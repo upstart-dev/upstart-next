@@ -74,7 +74,7 @@ function EventCardSkeleton() {
 }
 
 interface EventsSectionProps {
-  id?: string;
+  id: string;
 }
 
 export function EventsSection({ id }: EventsSectionProps) {

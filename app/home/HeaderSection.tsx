@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { ChevronDown } from "lucide-react";
 
-export function HeaderSection() {
+interface HeaderSectionProps {
+  id: string;
+}
+
+
+export function HeaderSection({ id }: HeaderSectionProps) {
   const scrollToNextSection = () => {
     window.scrollTo({
       top: window.innerHeight,
@@ -15,7 +20,7 @@ export function HeaderSection() {
   };
 
   return (
-    <AuroraBackground className="relative h-screen flex flex-col justify-between">
+    <AuroraBackground id={id} className="relative h-screen flex flex-col justify-between">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
