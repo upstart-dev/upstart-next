@@ -252,12 +252,12 @@ ${problem}
             onClick={handleClick}
           >
             <HelpCircle className="mr-2 h-4 w-4" />
-            Problemas
+            Problems
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80">
           <div className="space-y-4">
-            <h4 className="font-medium leading-none">Precisa de ajuda?</h4>
+            <h4 className="font-medium leading-none">Do you need help? </h4>
             <p className="text-sm text-muted-foreground">
               If you're experiencing any issues, please fill out the form below and our support team will get back to you as soon as possible.
             </p>
@@ -274,7 +274,7 @@ ${problem}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   type="email"
                   id="email"
@@ -446,7 +446,7 @@ const OnboardingForm: React.FC = () => {
         </Button>
         <ProblemsButton />
       </div>
-      <h1 className="text-3xl font-bold mb-8 text-center">Bem-vindo à UPSTART!</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">Welcome to UPSTART!</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           {/* Campos de Nome */}
@@ -455,17 +455,17 @@ const OnboardingForm: React.FC = () => {
             name="firstName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel htmlFor="firstName" className="text-lg font-semibold">Vamos começar conhecendo você um pouco. <strong>Qual é o seu nome?</strong></FormLabel>
+                <FormLabel htmlFor="firstName" className="text-lg font-semibold">Let's start by getting to know you a bit. <strong>What's your name?</strong></FormLabel>
                 <div className="grid grid-cols-2 gap-4 mt-3">
                   <FormControl>
-                    <Input id="firstName" placeholder="Seu nome" {...field} className="h-10" />
+                    <Input id="firstName" placeholder="Your name" {...field} className="h-10" />
                   </FormControl>
                   <FormField
                     control={form.control}
                     name="lastName"
                     render={({ field: lastNameField }) => (
                       <FormControl>
-                        <Input id="lastName" placeholder="Seu sobrenome" {...lastNameField} className="h-10" />
+                        <Input id="lastName" placeholder="Your surname" {...lastNameField} className="h-10" />
                       </FormControl>
                     )}
                   />
@@ -481,12 +481,12 @@ const OnboardingForm: React.FC = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="email" className="text-lg font-semibold">Seu <strong>endereço de e-mail</strong>:</FormLabel>
+                  <FormLabel htmlFor="email" className="text-lg font-semibold">Your <strong>e-mail adress</strong>:</FormLabel>
                   <FormControl>
                     <Input 
                       id="email" 
                       type="email" 
-                      placeholder="Seu endereço de e-mail" 
+                      placeholder="Your e-mail adress" 
                       {...field} 
                       className="h-10"
                       autoComplete = "NULL"  // Adicionado o atributo autocomplete
@@ -966,7 +966,7 @@ const OnboardingForm: React.FC = () => {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel htmlFor="termsAgreement" className="text-sm font-medium">
-                    Li e concordo com os <strong>Termos de Uso e Política de Proteção de Dados</strong>.
+                  I have read and agree to the <strong>Terms of Use and Data Protection Policy</strong>
                   </FormLabel>
                   <FormMessage />
                 </div>
@@ -984,7 +984,7 @@ const OnboardingForm: React.FC = () => {
             disabled={isSubmitting}
             onClick={() => addLog('Botão de envio clicado')}
           >
-            {isSubmitting ? 'Enviando...' : 'Enviar'}
+            {isSubmitting ? 'Sending...' : 'Send'}
           </Button>
         </form>
       </Form>
