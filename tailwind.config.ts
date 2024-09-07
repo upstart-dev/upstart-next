@@ -1,9 +1,9 @@
-const {
-  default: flattenColorPalette,
-} = require("tailwindcss/lib/util/flattenColorPalette");
+import type { Config } from 'tailwindcss';
+import { type PluginAPI } from 'tailwindcss/types/config';
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const flattenColorPalette = require("tailwindcss/lib/util/flattenColorPalette").default;
+
+const config: Config = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -55,24 +55,24 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-     borderRadius: {
-        'sm': '0.5rem',      // 8px
-        DEFAULT: '1rem',     // 16px
-        'md': '1.5rem',      // 24px
-        'lg': '2rem',        // 32px
-        'xl': '2.5rem',      // 40px
-        '2xl': '3rem',       // 48px
-        '3xl': '3.5rem',     // 56px
-        'full': '9999px',    // Completamente circular
+      borderRadius: {
+        'sm': '0.5rem',
+        DEFAULT: '1rem',
+        'md': '1.5rem',
+        'lg': '2rem',
+        'xl': '2.5rem',
+        '2xl': '3rem',
+        '3xl': '3.5rem',
+        'full': '9999px',
       },
       keyframes: {
         "accordion-down": {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
+          to: { height: '0' },
         },
         aurora: {
           from: {
@@ -94,12 +94,15 @@ module.exports = {
 };
 
 // This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
-function addVariablesForColors({ addBase, theme }) {
-  let allColors = flattenColorPalette(theme("colors"));
+function addVariablesForColors({ addBase, theme }: PluginAPI) {
+  const allColors = flattenColorPalette(theme("colors"));
   let newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
-  );
+  ) as { [key: string]: string };
+
   addBase({
     ":root": newVars,
   });
 }
+
+export default config;
