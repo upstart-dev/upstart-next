@@ -7,7 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from '@supabase/supabase-js';
 import { useTheme } from "next-themes"
-import { MoonIcon, SunIcon } from "lucide-react"
+import { Globe, MessageSquare, MoonIcon, SunIcon } from "lucide-react"
 import {
   Form,
   FormField,
@@ -71,6 +71,8 @@ const formSchema = z.object({
   firstName: z.string().min(1, "Name is mandatory"),
   lastName: z.string().min(1, "Surname is mandatory"),
   email: z.string().email("E-mail not valid").min(1, "E-mail is mandatory"),
+  languages: z.array(z.enum(["Portuguese", "English", "Other"])).min(1, "Select at least one language"),
+  otherLanguage: z.string().optional(),
   universityName: z.string().min(1, "College name is mandatory"),
   academicLevel: z.enum(["Undergraduate", "Master's", "Doctoral", "PhD"], {
     required_error: "Please select your current academic level",
@@ -109,6 +111,7 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+type LanguageType = "Portuguese" | "English" | "Other";
 type RoleType = "Idea Guy" | "Communicator" | "Peacemaker" | "Problem Solver" | "Problem Finder" | "Executor";
 type ExpertiseType = "Business" | "Marketing" | "Tech" | "Design" | "Other";
 type MotivationType = "BringIdeaToLife" | "LearningTools" | "FindingTeam" | "WorkingCoolProjects" | "AccessMentoring" | "MeetingPeople" | "Other";
@@ -155,6 +158,12 @@ const academicLevelOptions: Array<{ value: AcademicLevelType; label: string; ico
   { value: "Master's", label: "Master's", icon: GraduationCap },
   { value: "Doctoral", label: "Doctoral", icon: GraduationCap },
   { value: "PhD", label: "PhD", icon: GraduationCap },
+];
+
+const languageOptions: Array<{ value: LanguageType; label: string; icon: React.ElementType }> = [
+  { value: "Portuguese", label: "Portuguese", icon: Globe },
+  { value: "English", label: "English", icon: Globe },
+  { value: "Other", label: "Other", icon: Box },
 ];
 
 const ProblemsButton: React.FC = () => {
@@ -214,6 +223,8 @@ const OnboardingForm: React.FC = () => {
       firstName: "",
       lastName: "",
       email: "",
+      languages: [],
+      otherLanguage: "",
       universityName: "",
       academicLevel: undefined,
       courseMajor: "",
@@ -356,26 +367,83 @@ const OnboardingForm: React.FC = () => {
             )}
           />
 
+            {/* Email Selection */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="email" className="text-lg font-semibold">Seu <strong>endereço de e-mail</strong>:</FormLabel>
+                  <FormControl>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="Seu endereço de e-mail" 
+                      {...field} 
+                      className="h-10"
+                      autoComplete = "NULL"  // Adicionado o atributo autocomplete
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          {/* Language Selection */}
           <FormField
             control={form.control}
-            name="email"
+            name="languages"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="email" className="text-lg font-semibold">Seu <strong>endereço de e-mail</strong>:</FormLabel>
-                <FormControl>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="Seu endereço de e-mail" 
-                    {...field} 
-                    className="h-10"
-                    autoComplete = "NULL"  // Adicionado o atributo autocomplete
-                  />
-                </FormControl>
+                <fieldset>
+                  <legend className="text-lg font-semibold mb-3">
+                    Select the <strong>language(s) you're most comfortable with</strong>:
+                  </legend>
+                  <div className="grid grid-cols-3 gap-4">
+                    {languageOptions.map(({ value, label, icon: Icon }) => {
+                      const isSelected = field.value.includes(value);
+                      return (
+                        <Button
+                          key={value}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          onClick={() => {
+                            const updatedLanguages = isSelected
+                              ? field.value.filter((lang: LanguageType) => lang !== value)
+                              : [...field.value, value];
+                            field.onChange(updatedLanguages);
+                          }}
+                          className="h-32 flex flex-col items-center justify-center"
+                          aria-pressed={isSelected}
+                        >
+                          <Icon className="w-8 h-8 mb-2" />
+                          <span className="text-sm font-medium text-center">{label}</span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          {/* Other Language Input */}
+          {form.watch("languages").includes("Other") && (
+            <FormField
+              control={form.control}
+              name="otherLanguage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>What's your <strong>other language</strong>?</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your other language" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Divisória personalizada */}
           <div className="my-12">
