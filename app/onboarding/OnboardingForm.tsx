@@ -1,6 +1,6 @@
 "use client"
 import { submitForm } from './formsActions';
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, FormEvent, ChangeEvent } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
@@ -48,6 +48,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const generateUniqueId = (prefix: string) => `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -168,15 +170,84 @@ const languageOptions: Array<{ value: LanguageType; label: string; icon: React.E
 
 const ProblemsButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [problem, setProblem] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [feedback, setFeedback] = useState('');
 
   const handleClick = useCallback(() => setIsOpen(prev => !prev), []);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setFeedback('');
+
+    const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
+    if (!webhookUrl) {
+      setFeedback('Error: Support system not configured.');
+      setIsLoading(false);
+      return;
+    }
+
+    const formattedMessage = `
+**New Support Request**
+:bust_in_silhouette: **Name:** ${name}
+:envelope: **Email:** ${email}
+:warning: **Problem:**
+${problem}
+---
+*This support request was sent through the Problems button on the form page.*
+    `.trim();
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: formattedMessage,
+        }),
+      });
+
+      if (response.ok) {
+        setFeedback('Support request sent successfully!');
+        setName('');
+        setEmail('');
+        setProblem('');
+      } else {
+        throw new Error('Failed to send support request');
+      }
+    } catch (error) {
+      setFeedback('Error sending support request. Please try again.');
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    switch (id) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'problem':
+        setProblem(value);
+        break;
+    }
+  };
 
   return (
     <div className="absolute top-0 right-0">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={handleClick}
           >
@@ -185,23 +256,60 @@ const ProblemsButton: React.FC = () => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium leading-none">Precisa de ajuda?</h4>
-              <p className="text-sm text-muted-foreground">
-                If you are experiencing any issues, please contact our support team at{' '}
-                <a href="mailto:suporte@upstart.pt" className="font-medium text-primary">
-                  suporte@upstart.pt
-                </a>
-                . We are here to help!
-              </p>
-            </div>
+          <div className="space-y-4">
+            <h4 className="font-medium leading-none">Precisa de ajuda?</h4>
+            <p className="text-sm text-muted-foreground">
+              If you're experiencing any issues, please fill out the form below and our support team will get back to you as soon as possible.
+            </p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="problem">Describe your problem</Label>
+                <Textarea
+                  id="problem"
+                  value={problem}
+                  onChange={handleInputChange}
+                  required
+                  rows={3}
+                  className="w-full"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send Support Request'}
+              </Button>
+              {feedback && (
+                <div className={`mt-2 p-2 text-sm rounded ${feedback.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {feedback}
+                </div>
+              )}
+            </form>
           </div>
         </PopoverContent>
       </Popover>
     </div>
-  )
-}
+  );
+};
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
