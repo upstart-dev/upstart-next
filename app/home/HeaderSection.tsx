@@ -20,7 +20,7 @@ export function HeaderSection({ id }: HeaderSectionProps) {
   };
 
   return (
-    <AuroraBackground id={id} className="relative h-screen flex flex-col justify-between">
+    <AuroraBackground id={id} className=" bg-black relative h-screen flex flex-col justify-between">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
