@@ -1,13 +1,13 @@
 "use client"
 import { submitForm } from './formsActions';
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, FormEvent, ChangeEvent } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from '@supabase/supabase-js';
 import { useTheme } from "next-themes"
-import { MoonIcon, SunIcon } from "lucide-react"
+import { Globe, MessageSquare, MoonIcon, SunIcon } from "lucide-react"
 import {
   Form,
   FormField,
@@ -48,6 +48,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const generateUniqueId = (prefix: string) => `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -71,6 +73,8 @@ const formSchema = z.object({
   firstName: z.string().min(1, "Name is mandatory"),
   lastName: z.string().min(1, "Surname is mandatory"),
   email: z.string().email("E-mail not valid").min(1, "E-mail is mandatory"),
+  languages: z.array(z.enum(["Portuguese", "English", "Other"])).min(1, "Select at least one language"),
+  otherLanguage: z.string().optional(),
   universityName: z.string().min(1, "College name is mandatory"),
   academicLevel: z.enum(["Undergraduate", "Master's", "Doctoral", "PhD"], {
     required_error: "Please select your current academic level",
@@ -109,6 +113,7 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
+type LanguageType = "Portuguese" | "English" | "Other";
 type RoleType = "Idea Guy" | "Communicator" | "Peacemaker" | "Problem Solver" | "Problem Finder" | "Executor";
 type ExpertiseType = "Business" | "Marketing" | "Tech" | "Design" | "Other";
 type MotivationType = "BringIdeaToLife" | "LearningTools" | "FindingTeam" | "WorkingCoolProjects" | "AccessMentoring" | "MeetingPeople" | "Other";
@@ -157,17 +162,92 @@ const academicLevelOptions: Array<{ value: AcademicLevelType; label: string; ico
   { value: "PhD", label: "PhD", icon: GraduationCap },
 ];
 
+const languageOptions: Array<{ value: LanguageType; label: string; icon: React.ElementType }> = [
+  { value: "Portuguese", label: "Portuguese", icon: Globe },
+  { value: "English", label: "English", icon: Globe },
+  { value: "Other", label: "Other", icon: Box },
+];
+
 const ProblemsButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [problem, setProblem] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [feedback, setFeedback] = useState('');
 
   const handleClick = useCallback(() => setIsOpen(prev => !prev), []);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setFeedback('');
+
+    const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL;
+    if (!webhookUrl) {
+      setFeedback('Error: Support system not configured.');
+      setIsLoading(false);
+      return;
+    }
+
+    const formattedMessage = `
+**New Support Request**
+:bust_in_silhouette: **Name:** ${name}
+:envelope: **Email:** ${email}
+:warning: **Problem:**
+${problem}
+---
+*This support request was sent through the Problems button on the form page.*
+    `.trim();
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: formattedMessage,
+        }),
+      });
+
+      if (response.ok) {
+        setFeedback('Support request sent successfully!');
+        setName('');
+        setEmail('');
+        setProblem('');
+      } else {
+        throw new Error('Failed to send support request');
+      }
+    } catch (error) {
+      setFeedback('Error sending support request. Please try again.');
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    switch (id) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'problem':
+        setProblem(value);
+        break;
+    }
+  };
 
   return (
     <div className="absolute top-0 right-0">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={handleClick}
           >
@@ -176,23 +256,60 @@ const ProblemsButton: React.FC = () => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium leading-none">Precisa de ajuda?</h4>
-              <p className="text-sm text-muted-foreground">
-                If you are experiencing any issues, please contact our support team at{' '}
-                <a href="mailto:suporte@upstart.pt" className="font-medium text-primary">
-                  suporte@upstart.pt
-                </a>
-                . We are here to help!
-              </p>
-            </div>
+          <div className="space-y-4">
+            <h4 className="font-medium leading-none">Precisa de ajuda?</h4>
+            <p className="text-sm text-muted-foreground">
+              If you're experiencing any issues, please fill out the form below and our support team will get back to you as soon as possible.
+            </p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="problem">Describe your problem</Label>
+                <Textarea
+                  id="problem"
+                  value={problem}
+                  onChange={handleInputChange}
+                  required
+                  rows={3}
+                  className="w-full"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send Support Request'}
+              </Button>
+              {feedback && (
+                <div className={`mt-2 p-2 text-sm rounded ${feedback.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  {feedback}
+                </div>
+              )}
+            </form>
           </div>
         </PopoverContent>
       </Popover>
     </div>
-  )
-}
+  );
+};
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -214,6 +331,8 @@ const OnboardingForm: React.FC = () => {
       firstName: "",
       lastName: "",
       email: "",
+      languages: [],
+      otherLanguage: "",
       universityName: "",
       academicLevel: undefined,
       courseMajor: "",
@@ -356,26 +475,83 @@ const OnboardingForm: React.FC = () => {
             )}
           />
 
+            {/* Email Selection */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="email" className="text-lg font-semibold">Seu <strong>endereço de e-mail</strong>:</FormLabel>
+                  <FormControl>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="Seu endereço de e-mail" 
+                      {...field} 
+                      className="h-10"
+                      autoComplete = "NULL"  // Adicionado o atributo autocomplete
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          {/* Language Selection */}
           <FormField
             control={form.control}
-            name="email"
+            name="languages"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="email" className="text-lg font-semibold">Seu <strong>endereço de e-mail</strong>:</FormLabel>
-                <FormControl>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="Seu endereço de e-mail" 
-                    {...field} 
-                    className="h-10"
-                    autoComplete = "NULL"  // Adicionado o atributo autocomplete
-                  />
-                </FormControl>
+                <fieldset>
+                  <legend className="text-lg font-semibold mb-3">
+                    Select the <strong>language(s) you're most comfortable with</strong>:
+                  </legend>
+                  <div className="grid grid-cols-3 gap-4">
+                    {languageOptions.map(({ value, label, icon: Icon }) => {
+                      const isSelected = field.value.includes(value);
+                      return (
+                        <Button
+                          key={value}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          onClick={() => {
+                            const updatedLanguages = isSelected
+                              ? field.value.filter((lang: LanguageType) => lang !== value)
+                              : [...field.value, value];
+                            field.onChange(updatedLanguages);
+                          }}
+                          className="h-32 flex flex-col items-center justify-center"
+                          aria-pressed={isSelected}
+                        >
+                          <Icon className="w-8 h-8 mb-2" />
+                          <span className="text-sm font-medium text-center">{label}</span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          {/* Other Language Input */}
+          {form.watch("languages").includes("Other") && (
+            <FormField
+              control={form.control}
+              name="otherLanguage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>What's your <strong>other language</strong>?</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Your other language" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Divisória personalizada */}
           <div className="my-12">
