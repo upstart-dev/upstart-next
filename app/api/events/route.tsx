@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('Raw Eventbrite response:', JSON.stringify(data, null, 2));
+    ///console.log('Raw Eventbrite response:', JSON.stringify(data, null, 2));
 
     const currentDate = new Date();
     let pastEventsCount = 0;

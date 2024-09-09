@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['img.evbuc.com'], // Adicione outros domínios conforme necessário
+    domains: ['www.eventbriteapi.com', 'img.evbuc.com'], // Adicione os domínios necessários
   },
   env: {
     EVENTBRITE_API_KEY: process.env.EVENTBRITE_API_KEY,

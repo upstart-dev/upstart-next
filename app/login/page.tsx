@@ -61,12 +61,7 @@ export default async function Login({ searchParams }: LoginProps) {
          
         </CardFooter>
       </Card>
-      <div className="mt-8 flex items-center justify-center space-x-2">
-        <Sparkles className="w-5 h-5 " />
-        <p className="text-sm text-muted-foreground">
-          Empowering innovators since 2024
-        </p>
-      </div>
+     
     </section>
   );
 }
