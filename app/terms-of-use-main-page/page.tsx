@@ -1,31 +1,19 @@
 "use client";
-
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from '@/components/ui/separator';
 
-const TermsAndConditions: React.FC = () => {
-  const router = useRouter();
-
-  const handleAccept = () => {
-    router.push('/onboarding?accepted=true');
-  };
-
-  const handleDecline = () => {
-    router.push('/onboarding');
-  };
-
+const TermsOfUse: React.FC = () => {
   return (
     <div className="flex justify-center items-center min-h-screen p-4 bg-gray-100">
       <Card className="w-full max-w-3xl bg-white shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Terms of Use and Data Protection Agreement</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Terms of Use</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-4 text-sm">
+          <ScrollArea className="h-[600px] pr-4">
+          <div className="space-y-4 text-sm">
               <p>Welcome to Upstart! Before proceeding, we kindly ask you to carefully read our Terms of Use and Data Protection Policy. These terms are crucial to ensure the protection of your privacy and to establish guidelines for the use of our services.</p>
 
               <h2 className="text-lg font-semibold mt-4">Data Collection</h2>
@@ -43,31 +31,21 @@ const TermsAndConditions: React.FC = () => {
               <h2 className="text-lg font-semibold mt-4">Data Security</h2>
               <p>We employ rigorous security measures to protect your data from unauthorized access or disclosure.</p>
 
-              <p className="mt-4">By continuing to use our services, you agree to these Terms of Use and our Data Protection Policy.</p>
+              <p className="mt-4">By continuing to use our services, you agree to these Terms of Use and our Data Protection Policy. If you have questions or need more information, please contact us at general@upstart.pt.</p>
 
               <p className="mt-4">Thank you for trusting us!</p>
               <p>Best regards,<br />The Upstart Team</p>
+
+                <Separator></Separator>
+              <p className="mt-4">If you have any questions about these Terms of Use, please contact us using the interface ate the main page.</p>
+
+              <p className="mt-4">Last updated: September 2024</p>
             </div>
           </ScrollArea>
         </CardContent>
-        <CardFooter className="flex justify-end space-x-4 pt-4">
-          <Button onClick={handleDecline} variant="outline" className="bg-gray-100 text-700 hover:bg-red-600">
-            Decline
-          </Button>
-          <Button onClick={handleAccept} className="text-white hover:bg-green-600">
-            Accept
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
 };
 
-export default TermsAndConditions;
-
-
-
-
-
-
-
+export default TermsOfUse;

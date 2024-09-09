@@ -33,7 +33,7 @@ export async function GET(request: Request) {
           .upsert({
             id: user.id,
             discord_uid: user.user_metadata.provider_id,
-            full_name: user.user_metadata.full_name,
+            username: user.user_metadata.full_name,
             avatar_url: user.user_metadata.avatar_url,
             updated_at: new Date().toISOString()
           }, {

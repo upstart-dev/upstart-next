@@ -7,7 +7,7 @@ const socialLinks = [
 ];
 
 const footerLinks = [
-  { text: "Terms of Use", href: "/terms-of-use" },
+  { text: "Terms of Use", href: "/terms-of-use-main-page", newTab: true },
 ];
 
 export function Footer() {
@@ -22,12 +22,12 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((link, index) => (
-                <Link 
-                  key={index} 
-                  href={link.href} 
-                  aria-label={link.label} 
+                <Link
+                  key={index}
+                  href={link.href}
+                  aria-label={link.label}
                   className="text-foreground hover:text-primary transition-colors"
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   {link.icon}
@@ -39,7 +39,12 @@ export function Footer() {
             <ul className="space-y-2">
               {footerLinks.map((link, index) => (
                 <li key={index}>
-                  <Link href={link.href} className="text-sm hover:text-primary transition-colors">
+                  <Link 
+                    href={link.href} 
+                    className="text-sm hover:text-primary transition-colors"
+                    target={link.newTab ? "_blank" : undefined}
+                    rel={link.newTab ? "noopener noreferrer" : undefined}
+                  >
                     {link.text}
                   </Link>
                 </li>
