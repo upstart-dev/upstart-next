@@ -74,7 +74,7 @@ const formSchema = z.object({
   lastName: z.string().min(1, "Surname is mandatory"),
   email: z.string().email("E-mail not valid").min(1, "E-mail is mandatory"),
   languages: z.array(z.enum(["Portuguese", "English", "Other"])).min(1, "Select at least one language"),
-  otherLanguage: z.string().optional(),
+  other_language: z.string().optional(),
   universityName: z.string().min(1, "College name is mandatory"),
   academicLevel: z.enum(["Undergraduate", "Master's", "Doctoral", "PhD"], {
     required_error: "Please select your current academic level",
@@ -332,7 +332,7 @@ const OnboardingForm: React.FC = () => {
       lastName: "",
       email: "",
       languages: [],
-      otherLanguage: "",
+      other_language: "",
       universityName: "",
       academicLevel: undefined,
       courseMajor: "",
@@ -349,6 +349,12 @@ const OnboardingForm: React.FC = () => {
       termsAgreement: false,
     },
   });
+
+  useEffect(() => {
+    if (!form.watch("languages").includes("Other")) {
+      form.setValue("other_language", "");
+    }
+  }, [form.watch("languages")]);
 
   const addLog = useCallback((message: string) => {
     setLogs(prevLogs => [...prevLogs, `${new Date().toISOString()}: ${message}`])
@@ -380,10 +386,6 @@ const OnboardingForm: React.FC = () => {
       form.setValue('termsAgreement', true)
     }
   }, [searchParams, form])
-
-
-  
-  
 
   const handleRoleSelect = (role: RoleType) => {
     const currentRoles = form.getValues("roles");
@@ -419,7 +421,9 @@ const OnboardingForm: React.FC = () => {
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
     setIsSubmitting(true);
     setSubmitError(null);
-    
+
+    console.log('Dados do formulário antes do envio:', data);
+
     const result = await submitForm(data);
     
     if (result.success) {
@@ -540,7 +544,7 @@ const OnboardingForm: React.FC = () => {
           {form.watch("languages").includes("Other") && (
             <FormField
               control={form.control}
-              name="otherLanguage"
+              name="other_language"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>What's your <strong>other language</strong>?</FormLabel>

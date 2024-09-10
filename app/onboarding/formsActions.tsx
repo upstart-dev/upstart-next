@@ -12,6 +12,8 @@ const formSchema = z.object({
   firstName: z.string().min(1, "Nome é obrigatório"),
   lastName: z.string().min(1, "Sobrenome é obrigatório"),
   email: z.string().email("E-mail inválido").min(1, "E-mail é obrigatório"),
+  languages: z.array(z.enum(["English", "Portuguese", "Other"])).min(1),
+  other_language: z.string().optional(),
   universityName: z.string().min(1, "Nome da universidade é obrigatório"),
   academicLevel: z.enum(["Undergraduate", "Master's", "Doctoral", "PhD"]),
   courseMajor: z.string().min(1, "Curso/Major é obrigatório"),
@@ -36,6 +38,7 @@ const formatArrayForSupabase = (arr: string[]): string => {
 };
 
 export const submitForm = async (data: FormData) => {
+  console.log('Dados recebidos na função submitForm:', data);
   console.log('Formulário iniciado');
 
   try {
@@ -54,6 +57,8 @@ export const submitForm = async (data: FormData) => {
 
     // Preparar os dados para enviar para o Supabase
     const payload = {
+      languages: formatArrayForSupabase(data.languages),
+      other_language: data.other_language,
       first_name: data.firstName,
       last_name: data.lastName,
       email: data.email,
@@ -63,6 +68,7 @@ export const submitForm = async (data: FormData) => {
       student_id: data.studentId,
       phone_number: data.phoneNumber,
       roles: formatArrayForSupabase(data.roles),
+      
       expertise: data.expertise,
       other_expertise: data.otherExpertise,
       interests: formatArrayForSupabase(data.interests),
@@ -73,7 +79,8 @@ export const submitForm = async (data: FormData) => {
       user_id: userId, // Adiciona o user_id do usuário autenticado
     };
 
-    console.log('Dados preparados para o Supabase:', payload);
+    //console.log('Dados preparados para o Supabase:', payload);
+    console.log(payload.languages)
 
     // Inserir os dados no Supabase
     const { data: insertedData, error } = await supabase
