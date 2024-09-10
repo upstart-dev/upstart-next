@@ -56,7 +56,7 @@ export const submitForm = async (data: FormData) => {
     const userId = userData.user.id;
 
     // Preparar os dados para enviar para o Supabase
-    const payload = {
+    const onboardingPayload = {
       languages: formatArrayForSupabase(data.languages),
       other_language: data.other_language,
       first_name: data.firstName,
@@ -79,20 +79,34 @@ export const submitForm = async (data: FormData) => {
       user_id: userId, // Adiciona o user_id do usuário autenticado
     };
 
-    //console.log('Dados preparados para o Supabase:', payload);
-    console.log(payload.languages)
+    // Preparar os dados para atualizar a tabela profiles
+    const profilesPayload = {
+      real_full_name: `${data.firstName} ${data.lastName}`,
+      roles: formatArrayForSupabase(data.roles),
+    };
 
-    // Inserir os dados no Supabase
-    const { data: insertedData, error } = await supabase
+    // Inserir os dados no Supabase (onboarding_answers)
+    const { data: insertedData, error: onboardingError } = await supabase
       .from('onboarding_answers')
-      .insert([payload]);
+      .insert([onboardingPayload]);
 
-    if (error) {
-      throw new Error('Erro ao inserir os dados no Supabase: ' + error.message);
+    if (onboardingError) {
+      throw new Error('Erro ao inserir os dados no Supabase (onboarding_answers): ' + onboardingError.message);
     }
 
-    console.log('Dados inseridos com sucesso:', insertedData);
-    return { success: true, data: insertedData };
+    // Atualizar a tabela profiles
+    const { data: updatedProfile, error: profileError } = await supabase
+      .from('profiles')
+      .update(profilesPayload)
+      .eq('discord_uid', userId);
+
+    if (profileError) {
+      throw new Error('Erro ao atualizar os dados no Supabase (profiles): ' + profileError.message);
+    }
+
+    console.log('Dados inseridos com sucesso (onboarding_answers):', insertedData);
+    console.log('Perfil atualizado com sucesso:', updatedProfile);
+    return { success: true, data: { onboarding: insertedData, profile: updatedProfile } };
   } catch (error: any) {
     console.error('Erro ao submeter o formulário:', error);
     return { success: false, error: error.message || 'Erro desconhecido' };
