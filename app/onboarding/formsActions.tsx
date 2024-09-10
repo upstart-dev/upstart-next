@@ -9,16 +9,16 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Definição do schema do formulário
 const formSchema = z.object({
-  firstName: z.string().min(1, "Nome é obrigatório"),
-  lastName: z.string().min(1, "Sobrenome é obrigatório"),
-  email: z.string().email("E-mail inválido").min(1, "E-mail é obrigatório"),
+  firstName: z.string().min(1, "Name is mandatory"),
+  lastName: z.string().min(1, "Surname is mandatory"),
+  email: z.string().email("Invalid e-mail").min(1, "E-mail is mandatory"),
   languages: z.array(z.enum(["English", "Portuguese", "Other"])).min(1),
   other_language: z.string().optional(),
-  universityName: z.string().min(1, "Nome da universidade é obrigatório"),
+  universityName: z.string().min(1, "University name is mandatory"),
   academicLevel: z.enum(["Undergraduate", "Master's", "Doctoral", "PhD"]),
-  courseMajor: z.string().min(1, "Curso/Major é obrigatório"),
-  studentId: z.string().min(1, "Número de ID do estudante é obrigatório"),
-  phoneNumber: z.string().min(1, "Número de telefone é obrigatório"),
+  courseMajor: z.string().min(1, "Course/Major is mandatory"),
+  studentId: z.string().min(1, "Student ID number is mandatory"),
+  phoneNumber: z.string().min(1, "Phone Number is mandatory"),
   roles: z.array(z.enum(["Idea Guy", "Communicator", "Peacemaker", "Problem Solver", "Problem Finder", "Executor"])).min(1),
   expertise: z.enum(["Business", "Marketing", "Tech", "Design", "Other"]),
   otherExpertise: z.string().optional(),
