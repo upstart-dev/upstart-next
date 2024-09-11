@@ -387,6 +387,29 @@ const OnboardingForm: React.FC = () => {
     }
   }, [searchParams, form])
 
+  useEffect(() => {
+    const savedFormData = localStorage.getItem('formData');
+    if (savedFormData) {
+      const parsedData = JSON.parse(savedFormData);
+      Object.keys(parsedData).forEach((key) => {
+        form.setValue(key as keyof FormData, parsedData[key]);
+      });
+    }
+    
+    if (searchParams.get('accepted') === 'true') {
+      form.setValue('termsAgreement', true);
+    }
+    
+    setMounted(true);
+  }, [searchParams, form]);
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      localStorage.setItem('formData', JSON.stringify(value));
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   const handleRoleSelect = (role: RoleType) => {
     const currentRoles = form.getValues("roles");
     if (currentRoles.includes(role)) {
@@ -946,7 +969,13 @@ const OnboardingForm: React.FC = () => {
               <p className="text-muted-foreground">
                 Before marking the next box, feel free to read our Terms of Use and Data Protection Agreement. 
                 You can access them by clicking {' '}
-                <Link href="/termos-of-use" className="text-primary hover:underline">
+                <Link 
+                  href={{
+                    pathname: '/termos-of-use',
+                    query: { formData: JSON.stringify(form.getValues()) }
+                  }} 
+                  className="text-primary hover:underline"
+                >
                   here
                 </Link>.
               </p>

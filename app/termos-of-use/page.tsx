@@ -1,15 +1,20 @@
 "use client";
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter , useSearchParams} from 'next/navigation';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TermsAndConditions: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleAccept = () => {
+    const formData = searchParams.get('formData');
+    if (formData) {
+      localStorage.setItem('formData', formData);
+    }
     router.push('/onboarding?accepted=true');
   };
 
