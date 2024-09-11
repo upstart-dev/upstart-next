@@ -437,8 +437,8 @@ const OnboardingForm: React.FC = () => {
   };
 
   return (
-    <div className="relative max-w-4xl mx-auto p-6 mt-4"> {/* Adicionada margem no topo */}
-      <div className="absolute top-0 left-0 right-0 flex justify-between items-center">
+    <div className="relative max-w-4xl mx-auto p-4 sm:p-6 mt-4">
+      <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-4">
         <Button
           variant="outline"
           size="icon"
@@ -450,17 +450,17 @@ const OnboardingForm: React.FC = () => {
         </Button>
         <ProblemsButton />
       </div>
-      <h1 className="text-3xl font-bold mb-8 text-center">Welcome to UPSTART!</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center mt-16 sm:mt-0">Welcome to UPSTART!</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 sm:space-y-8">
           {/* Campos de Nome */}
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel htmlFor="firstName" className="text-lg font-semibold">Let's start by getting to know you a bit.<strong> What's your name?</strong></FormLabel>
-                <div className="grid grid-cols-2 gap-4 mt-3">
+                <FormLabel htmlFor="firstName" className="text-base sm:text-lg font-semibold">Let's start by getting to know you a bit.<strong> What's your name?</strong></FormLabel>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
                   <FormControl>
                     <Input id="firstName" placeholder="Your name" {...field} className="h-10" />
                   </FormControl>
@@ -485,15 +485,15 @@ const OnboardingForm: React.FC = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor="email" className="text-lg font-semibold">Your <strong>e-mail adress</strong>:</FormLabel>
+                  <FormLabel htmlFor="email" className="text-base sm:text-lg font-semibold">Your <strong>e-mail address</strong>:</FormLabel>
                   <FormControl>
                     <Input 
                       id="email" 
                       type="email" 
-                      placeholder="Your e-mail adress" 
+                      placeholder="Your e-mail address" 
                       {...field} 
                       className="h-10"
-                      autoComplete = "NULL"  // Adicionado o atributo autocomplete
+                      autoComplete="off"
                     />
                   </FormControl>
                   <FormMessage />
@@ -508,10 +508,10 @@ const OnboardingForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
-                    Select the <strong>language(s) you're most comfortable with</strong>:
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
+                    Select all the <strong>language(s) you're comfortable with</strong>:
                   </legend>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {languageOptions.map(({ value, label, icon: Icon }) => {
                       const isSelected = field.value.includes(value);
                       return (
@@ -525,11 +525,11 @@ const OnboardingForm: React.FC = () => {
                               : [...field.value, value];
                             field.onChange(updatedLanguages);
                           }}
-                          className="h-32 flex flex-col items-center justify-center"
+                          className="h-24 sm:h-32 flex flex-col items-center justify-center"
                           aria-pressed={isSelected}
                         >
-                          <Icon className="w-8 h-8 mb-2" />
-                          <span className="text-sm font-medium text-center">{label}</span>
+                          <Icon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+                          <span className="text-xs sm:text-sm font-medium text-center">{label}</span>
                         </Button>
                       );
                     })}
@@ -547,9 +547,9 @@ const OnboardingForm: React.FC = () => {
               name="other_language"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What's your <strong>other language</strong>?</FormLabel>
+                  <FormLabel className="text-base sm:text-lg font-semibold">What's your <strong>other language</strong>?</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your other language" {...field} />
+                    <Input placeholder="Your other language" {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -576,10 +576,10 @@ const OnboardingForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
                     Select the <strong>role(s) that resonate with you</strong> the most:
                   </legend>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {([
                       { role: "Idea Guy", icon: Lightbulb },
                       { role: "Communicator", icon: Megaphone },
@@ -600,11 +600,11 @@ const OnboardingForm: React.FC = () => {
                               : [...field.value, role];
                             field.onChange(updatedRoles);
                           }}
-                          className="h-32 flex flex-col items-center justify-center"
+                          className="h-24 sm:h-32 flex flex-col items-center justify-center"
                           aria-pressed={isSelected}
                         >
-                          <Icon className="w-8 h-8 mb-2" />
-                          <span className="text-sm font-medium text-center">{role}</span>
+                          <Icon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+                          <span className="text-xs sm:text-sm font-medium text-center">{role}</span>
                         </Button>
                       );
                     })}
@@ -622,10 +622,10 @@ const OnboardingForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
                     Choose your <strong>primary area of expertise or interest</strong>:
                   </legend>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {([
                       { expertise: "Business", icon: Briefcase },
                       { expertise: "Marketing", icon: BarChart },
@@ -638,11 +638,11 @@ const OnboardingForm: React.FC = () => {
                         type="button"
                         variant={field.value === expertise ? "default" : "outline"}
                         onClick={() => field.onChange(expertise)}
-                        className="h-32 flex flex-col items-center justify-center"
+                        className="h-24 sm:h-32 flex flex-col items-center justify-center"
                         aria-pressed={field.value === expertise}
                       >
-                        <Icon className="w-8 h-8 mb-2" />
-                        <span className="text-sm font-medium text-center">{expertise}</span>
+                        <Icon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+                        <span className="text-xs sm:text-sm font-medium text-center">{expertise}</span>
                       </Button>
                     ))}
                   </div>
@@ -659,9 +659,9 @@ const OnboardingForm: React.FC = () => {
               name="otherExpertise"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What's your <strong>expertise</strong>?</FormLabel>
+                  <FormLabel className="text-base sm:text-lg font-semibold">What's your <strong>expertise</strong>?</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your expertise" {...field} />
+                    <Input placeholder="Your expertise" {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -676,7 +676,7 @@ const OnboardingForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
                     Select your <strong>interests</strong> from those:
                   </legend>
                   <div className="flex flex-wrap gap-2">
@@ -693,10 +693,10 @@ const OnboardingForm: React.FC = () => {
                               : [...field.value, interest];
                             field.onChange(updatedInterests);
                           }}
-                          className="p-2 h-10"
+                          className="p-2 h-10 text-xs sm:text-sm"
                           aria-pressed={isSelected}
                         >
-                          <span className="text-sm">{interest}</span>
+                          <span>{interest}</span>
                         </Button>
                       );
                     })}
@@ -726,10 +726,10 @@ const OnboardingForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
                     <strong>What brings you to our community</strong>? Select all that apply:
                   </legend>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {motivationOptions.map(({ value, label, icon: Icon }) => {
                       const isSelected = field.value.includes(value);
                       return (
@@ -743,11 +743,11 @@ const OnboardingForm: React.FC = () => {
                               : [...field.value, value];
                             field.onChange(updatedMotivations);
                           }}
-                          className="h-32 flex flex-col items-center justify-center"
+                          className="h-24 sm:h-32 flex flex-col items-center justify-center"
                           aria-pressed={isSelected}
                         >
-                          <Icon className="w-8 h-8 mb-2" />
-                          <span className="text-sm font-medium text-center">{label}</span>
+                          <Icon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+                          <span className="text-xs sm:text-sm font-medium text-center">{label}</span>
                         </Button>
                       );
                     })}
@@ -765,9 +765,9 @@ const OnboardingForm: React.FC = () => {
               name="otherMotivation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What's your <strong>other motivation</strong>?</FormLabel>
+                  <FormLabel className="text-base sm:text-lg font-semibold">What's your <strong>other motivation</strong>?</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your other motivation" {...field} />
+                    <Input placeholder="Your other motivation" {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -787,28 +787,28 @@ const OnboardingForm: React.FC = () => {
             <Separator className="my-6" />
           </div>
 
-          {/* Pergunta sobre experiência com inovação */}
+          {/* Pergunta sobre experiência com inovação (continuação) */}
           <FormField
             control={form.control}
             name="innovationExperience"
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
                     What's your <strong>experience with innovation or entrepreneurship</strong>?
                   </legend>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {innovationExperienceOptions.map(({ value, label, icon: Icon }) => (
                       <Button
                         key={value}
                         type="button"
                         variant={field.value === value ? "default" : "outline"}
                         onClick={() => field.onChange(value)}
-                        className="h-32 flex flex-col items-center justify-center"
+                        className="h-24 sm:h-32 flex flex-col items-center justify-center"
                         aria-pressed={field.value === value}
                       >
-                        <Icon className="w-8 h-8 mb-2" />
-                        <span className="text-sm font-medium text-center">{label}</span>
+                        <Icon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+                        <span className="text-xs sm:text-sm font-medium text-center">{label}</span>
                       </Button>
                     ))}
                   </div>
@@ -825,9 +825,9 @@ const OnboardingForm: React.FC = () => {
               name="otherInnovationExperience"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>What's your <strong>other experience</strong> with innovation or entrepreneurship?</FormLabel>
+                  <FormLabel className="text-base sm:text-lg font-semibold">What's your <strong>other experience</strong> with innovation or entrepreneurship?</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your other experience" {...field} />
+                    <Input placeholder="Your other experience" {...field} className="h-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -853,7 +853,7 @@ const OnboardingForm: React.FC = () => {
             name="universityName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg font-semibold">Your <strong>University Name</strong> is...</FormLabel>
+                <FormLabel className="text-base sm:text-lg font-semibold">Your <strong>University Name</strong> is...</FormLabel>
                 <FormControl>
                   <Input placeholder="Your university name" {...field} className="h-10" />
                 </FormControl>
@@ -869,21 +869,21 @@ const OnboardingForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <fieldset>
-                  <legend className="text-lg font-semibold mb-3">
+                  <legend className="text-base sm:text-lg font-semibold mb-3">
                     Current <strong>Academic Level</strong>:
                   </legend>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {academicLevelOptions.map(({ value, label, icon: Icon }) => (
                       <Button
                         key={value}
                         type="button"
                         variant={field.value === value ? "default" : "outline"}
                         onClick={() => field.onChange(value)}
-                        className="h-32 flex flex-col items-center justify-center"
+                        className="h-24 sm:h-32 flex flex-col items-center justify-center"
                         aria-pressed={field.value === value}
                       >
-                        <Icon className="w-8 h-8 mb-2" />
-                        <span className="text-sm font-medium text-center">{label}</span>
+                        <Icon className="w-6 h-6 sm:w-8 sm:h-8 mb-2" />
+                        <span className="text-xs sm:text-sm font-medium text-center">{label}</span>
                       </Button>
                     ))}
                   </div>
@@ -899,7 +899,7 @@ const OnboardingForm: React.FC = () => {
             name="courseMajor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg font-semibold">Current <strong>Course/Major</strong>:</FormLabel>
+                <FormLabel className="text-base sm:text-lg font-semibold">Current <strong>Course/Major</strong>:</FormLabel>
                 <FormControl>
                   <Input placeholder="Your current course or major" {...field} className="h-10" />
                 </FormControl>
@@ -914,7 +914,7 @@ const OnboardingForm: React.FC = () => {
             name="studentId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg font-semibold">Your <strong>Student ID number</strong>:</FormLabel>
+                <FormLabel className="text-base sm:text-lg font-semibold">Your <strong>Student ID number</strong>:</FormLabel>
                 <FormControl>
                   <Input placeholder="Your student ID number" {...field} className="h-10" />
                 </FormControl>
@@ -929,7 +929,7 @@ const OnboardingForm: React.FC = () => {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg font-semibold">Your <strong>Phone Number</strong>:</FormLabel>
+                <FormLabel className="text-base sm:text-lg font-semibold">Your <strong>Phone Number</strong>:</FormLabel>
                 <FormControl>
                   <Input placeholder="Your phone number" {...field} className="h-10" />
                 </FormControl>
@@ -970,21 +970,21 @@ const OnboardingForm: React.FC = () => {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel htmlFor="termsAgreement" className="text-sm font-medium">
-                  I have read and agree to the <strong>Terms of Use and Data Protection Policy.</strong>
+                    I have read and agree to the <strong>Terms of Use and Data Protection Policy.</strong>
                   </FormLabel>
                   <FormMessage />
                 </div>
               </FormItem>
             )}
           />
-          
+
           {submitError && (
-            <div className="text-red-500 text-center">{submitError}</div>
+            <div className="text-red-500 text-center text-sm sm:text-base">{submitError}</div>
           )}
 
           <Button 
             type="submit" 
-            className="w-full mt-8 h-12 text-lg font-semibold"
+            className="w-full mt-6 sm:mt-8 h-10 sm:h-12 text-base sm:text-lg font-semibold"
             disabled={isSubmitting}
             onClick={() => addLog('Botão de envio clicado')}
           >
