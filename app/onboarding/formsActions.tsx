@@ -98,7 +98,7 @@ export const submitForm = async (data: FormData) => {
     const { data: updatedProfile, error: profileError } = await supabase
       .from('profiles')
       .update(profilesPayload)
-      .eq('discord_uid', userId);
+      .eq('id', userId);
 
     if (profileError) {
       throw new Error('Erro ao atualizar os dados no Supabase (profiles): ' + profileError.message);
