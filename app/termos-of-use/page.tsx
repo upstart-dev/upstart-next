@@ -1,26 +1,39 @@
-"use client";
+'use client';
 
-import React from 'react';
-import { useRouter , useSearchParams} from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const TermsAndConditions: React.FC = () => {
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const handleAccept = () => {
-    const formData = searchParams.get('formData');
-    if (formData) {
-      localStorage.setItem('formData', formData);
+    if (isClient) {
+      const formData = searchParams.get('formData');
+      if (formData) {
+        localStorage.setItem('formData', formData);
+      }
+      router.push('/onboarding?accepted=true');
     }
-    router.push('/onboarding?accepted=true');
   };
 
   const handleDecline = () => {
-    router.push('/onboarding');
+    if (isClient) {
+      router.push('/onboarding');
+    }
   };
+
+  if (!isClient) {
+    return null; // or a loading indicator
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen p-4 bg-gray-100">
