@@ -6,6 +6,7 @@ import { EventsSection } from "./home/EventsSection";
 import { MessageUsSection } from "./home/MessageUsSection";
 import { Footer } from "./home/Footer";
 import { SponsorsCarousel } from './home/SponsorsCarousel';
+import { FAQSection } from './home/FAQSection';
 import { FiHome, FiUsers, FiCalendar, FiMessageCircle } from 'react-icons/fi';
 
 export default function UPSTARTLandingPage() {
@@ -39,8 +40,11 @@ export default function UPSTARTLandingPage() {
         <HeaderSection id="home" />
         <FeaturesSection id="community" />
         <EventsSection id="events" />
-        <MessageUsSection id="contact" />
+        <FAQSection id="faq" />
         <SponsorsCarousel />
+        <MessageUsSection id="contact" />
+
+
       </main>
       <Footer />
     </div>
