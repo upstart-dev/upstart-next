@@ -27,10 +27,11 @@ import { signOut } from "@/app/login/actions";
 // Defina a interface para os props do componente
 interface TopMenuProps {
   pageTitle: string;
+  userInitials: string;
 }
 
 // Use a interface no argumento do componente
-export default function TopMenu({ pageTitle }: TopMenuProps) {
+export default function TopMenu({ pageTitle, userInitials }: TopMenuProps) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -105,7 +106,7 @@ export default function TopMenu({ pageTitle }: TopMenuProps) {
           >
             <Avatar className="h-9 w-9">
               <AvatarImage src="/path/to/profile-image.jpg" alt="Avatar" />
-              <AvatarFallback>GB</AvatarFallback>
+              <AvatarFallback>{userInitials}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
