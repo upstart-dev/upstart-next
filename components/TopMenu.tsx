@@ -1,5 +1,8 @@
+'use client';
+
 import React from "react";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import {
   Home,
   LineChart,
@@ -11,7 +14,6 @@ import {
   Users2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -22,16 +24,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { signOut } from "@/app/login/actions";
+import { createClient } from "@/utils/supabase/client";
 
-// Defina a interface para os props do componente
 interface TopMenuProps {
   pageTitle: string;
   userInitials: string;
 }
 
-// Use a interface no argumento do componente
 export default function TopMenu({ pageTitle, userInitials }: TopMenuProps) {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Sheet>
@@ -85,39 +93,33 @@ export default function TopMenu({ pageTitle, userInitials }: TopMenuProps) {
               <LineChart className="h-5 w-5" />
               Settings
             </Link>
-          </nav>
+            </nav>
         </SheetContent>
       </Sheet>
       <h1 className="text-2xl font-semibold text-gray-900">{pageTitle}</h1>
-      <div className="relative ml-auto flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search..."
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
-        />
+      <div className="ml-auto">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full p-0 overflow-hidden"
+            >
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="/path/to/profile-image.jpg" alt="Avatar" />
+                <AvatarFallback>{userInitials}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={handleSignOut}>
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="overflow-hidden rounded-full"
-          >
-            <Avatar className="h-9 w-9">
-              <AvatarImage src="/path/to/profile-image.jpg" alt="Avatar" />
-              <AvatarFallback>{userInitials}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <form action={signOut}>
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </form>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </header>
   );
 }
