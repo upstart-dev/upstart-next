@@ -7,7 +7,6 @@ import ProfileContent from "./ProfileContent";
 
 export default async function ProtectedPage() {
   const supabase = createClient();
-
   const { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
@@ -25,16 +24,14 @@ export default async function ProtectedPage() {
     console.error('Erro ao buscar dados do usuário:', userError);
   }
 
-  const userInitials = userData 
-    ? `${userData.first_name[0]}${userData.last_name[0]}`.toUpperCase()
-    : "";
+  // Removemos a variável userInitials, pois não é mais necessária para o TopMenu
 
   return (
     <div>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <SidebarMenu />
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-          <TopMenu pageTitle="Profile Page" userInitials={userInitials} />
+          <TopMenu pageTitle="Dashboard" userId={session.user.id} />
           <ProfileContent userId={session.user.id} />
         </div>
       </div>
