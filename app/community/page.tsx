@@ -1,7 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Layout from "@/components/my-layout";
 import { Input } from "@/components/ui/input";
@@ -9,53 +7,41 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLab
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
+import Link from 'next/link';
 
 export default async function Community() {
+  const supabase = createClient();
 
-  const experts = [
-    {
-      name: "John Doe",
-      title: "Web Developer",
-      description: "John is a skilled web developer with expertise in React, Node.js, and modern web technologies. He has a passion for building user-friendly and scalable applications.",
-      image: "/placeholder.svg"
-    },
-    {
-      name: "Jane Doe",
-      title: "UI/UX Designer",
-      description: "Jane is a talented UI/UX designer com um bom olhar para interfaces atraentes e amigáveis. Ela tem experiência em design para web e aplicativos móveis.",
-      image: "/placeholder.svg"
-    },
-    {
-      name: "Bob Smith",
-      title: "Data Scientist",
-      description: "Bob é um especialista em ciência de dados com forte background em machine learning e análise de dados. Ele ajudou muitas empresas a extrair insights valiosos de seus dados.",
-      image: "/placeholder.svg"
-    },
-    {
-      name: "Sarah Lee",
-      title: "Mobile Developer",
-      description: "Sarah é uma desenvolvedora móvel experiente com especialização em plataformas iOS e Android. Ela tem paixão por construir aplicativos móveis de alta performance e amigáveis.",
-      image: "/placeholder.svg"
-    },
-    {
-      name: "Michael Chen",
-      title: "AI Engineer",
-      description: "Michael é um engenheiro de IA com experiência em deep learning e processamento de linguagem natural. Ele trabalhou em diversos projetos, desde chatbots até aplicações de visão computacional.",
-      image: "/placeholder.svg"
-    },
-    {
-      name: "Emily Wang",
-      title: "Product Manager",
-      description: "Emily é uma gerente de produto experiente com forte background em pesquisa de usuários e estratégia de produto. Ela ajudou várias empresas a lançar produtos digitais bem-sucedidos.",
-      image: "/placeholder.svg"
-    }
-  ];
+  // Fetch user data from both tables
+  const { data: onboardingData, error: onboardingError } = await supabase
+    .from('onboarding_answers')
+    .select('*');
+
+  const { data: profilesData, error: profilesError } = await supabase
+    .from('profiles')
+    .select('*');
+
+  if (onboardingError || profilesError) {
+    console.error('Error fetching data:', onboardingError || profilesError);
+    return <div>Error loading community members</div>;
+  }
+
+  // Combine the data
+  const users = onboardingData.map(onboarding => {
+    const profile = profilesData.find(p => p.id === onboarding.user_id);
+    return {
+      ...onboarding,
+      description: profile?.description || "",
+      avatar_url: profile?.avatar_url || "",
+      id: onboarding.user_id
+    };
+  }).filter(user => user.first_name && user.last_name);
 
   return (
     <Layout pageTitle="Community">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Community Experts</h1>
-        <p className="text-gray-500 dark:text-gray-400">Find experts in your area of interest.</p>
+        <h1 className="text-3xl font-bold">Community Members</h1>
+        <p className="text-gray-500 dark:text-gray-400">Connect with fellow community members.</p>
       </div>
       <div className="mb-8 flex items-center">
         <div className="relative flex-1">
@@ -81,32 +67,32 @@ export default async function Community() {
         </DropdownMenu>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {experts.map((expert, index) => (
-          <Card key={index} className="flex flex-col">
-            <div className="flex-1">
-              <div className="relative h-40 overflow-hidden rounded-t-lg">
-                <img src={expert.image} alt={`${expert.name} Profile`} className="object-cover w-full h-full" />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center mb-2">
-                  <Avatar className="mr-3">
-                    <AvatarImage src={expert.image} alt={`${expert.name} Avatar`} />
-                    <AvatarFallback>{expert.name.split(" ").map(n => n[0]).join("")}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold text-lg">{expert.name}</h3>
-                    <p className="text-gray-500 dark:text-gray-400">{expert.title}</p>
-                  </div>
-                </div>
-                <p className="text-gray-500 dark:text-gray-400 line-clamp-3">
-                  {expert.description}
-                </p>
+        {users.map((user) => (
+          <Card key={user.id} className="flex flex-col p-6">
+            <div className="flex items-center mb-4">
+              <Avatar className="h-16 w-16 mr-4">
+                {user.avatar_url && user.avatar_url !== "https://cdn.discordapp.com/embed/avatars/0.png" ? (
+                  <AvatarImage src={user.avatar_url} alt={`${user.first_name} ${user.last_name}`} />
+                ) : (
+                  <AvatarFallback>{`${user.first_name[0]}${user.last_name[0]}`}</AvatarFallback>
+                )}
+              </Avatar>
+              <div>
+                <h3 className="font-semibold text-lg">{`${user.first_name} ${user.last_name}`}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{user.expertise || 'No expertise specified'}</p>
               </div>
             </div>
+            {user.description && (
+              <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-4">
+                {user.description}
+              </p>
+            )}
             <div className="mt-auto">
-              <Button variant="link" className="w-full">
-                View Profile
-              </Button>
+              <Link href={`/profile?id=${user.id}`} passHref>
+                <Button variant="outline" className="w-full">
+                  View Profile
+                </Button>
+              </Link>
             </div>
           </Card>
         ))}

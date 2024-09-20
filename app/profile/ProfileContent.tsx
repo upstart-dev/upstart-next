@@ -71,7 +71,9 @@ const socialIcons = {
 
 interface ProfileContentProps {
   userId: string;
+  isOwnProfile: boolean;
 }
+
 
 function ImprovedProfileEditDialog({ userData, onSave }: { userData: UserData; onSave: (updatedData: Partial<UserData>, section: string) => Promise<void> }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -287,10 +289,10 @@ function ImprovedProfileEditDialog({ userData, onSave }: { userData: UserData; o
   );
 }
 
-export default function ProfileContent({ userId }: ProfileContentProps) {
-    const [userData, setUserData] = useState<UserData | null>(null);
-    const supabase = createClient();
-    const { toast } = useToast();  
+export default function ProfileContent({ userId, isOwnProfile }: ProfileContentProps) {
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const supabase = createClient();
+  const { toast } = useToast();  
 
   useEffect(() => {
     async function fetchUserData() {
@@ -300,21 +302,18 @@ export default function ProfileContent({ userId }: ProfileContentProps) {
         .eq('id', userId)
         .single();
 
-      if (profileError) {
-        console.error('Erro ao buscar dados do perfil:', profileError);
-      }
-
       const { data: onboardingData, error: onboardingError } = await supabase
         .from('onboarding_answers')
         .select('first_name, last_name, roles, expertise, other_expertise')
         .eq('user_id', userId)
         .single();
 
-      if (onboardingError) {
-        console.error('Erro ao buscar dados do onboarding:', onboardingError);
+      if (profileError || onboardingError) {
+        console.error('Error fetching user data:', profileError || onboardingError);
+        return;
       }
 
-      const userData: UserData = {
+      setUserData({
         image: profileData?.avatar_url || "/path/to/default-image.jpg",
         name: onboardingData ? `${onboardingData.first_name} ${onboardingData.last_name}` : "Nome não disponível",
         handle: profileData?.full_name || "handle_padrao",
@@ -328,9 +327,7 @@ export default function ProfileContent({ userId }: ProfileContentProps) {
         tiktok: profileData?.tiktok || null,
         youtube: profileData?.youtube || null,
         spotify: profileData?.spotify || null,
-      };
-
-      setUserData(userData);
+      });
     }
 
     fetchUserData();
@@ -400,8 +397,59 @@ export default function ProfileContent({ userId }: ProfileContentProps) {
   });
 }
 };
-
 if (!userData) {
+  return <div>Loading...</div>;
+}
+
+return (
+  <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-black rounded-lg shadow-lg">
+      <div className="flex-shrink-0 mb-4 sm:mb-0">
+        <Avatar className="h-20 w-20">
+          <AvatarImage src={userData.image} alt={userData.name} />
+          <AvatarFallback>{userData.nameLetters}</AvatarFallback>
+        </Avatar>
+      </div>
+      <div className="ml-0 sm:ml-4 flex-grow">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-white">{userData.name}</h2>
+            <span className="text-sm text-gray-200">@{userData.handle}</span>
+          </div>
+          {isOwnProfile && <ImprovedProfileEditDialog userData={userData} onSave={handleSave} />}
+        </div>
+        <div className="flex flex-wrap mt-2">
+          <Badge 
+            key="expertise" 
+            className={`mr-2 mb-2 ${getExpertiseColor(userData.expertise)} text-white`}
+          >
+            {userData.expertise}
+          </Badge>
+          {userData.badges.map((badge, index) => (
+            <Badge key={index} className="mr-2 mb-2">
+              {badge}
+            </Badge>
+          ))}
+        </div>
+        <p className="mt-2 text-sm text-gray-200">{userData.description}</p>
+        <div className="flex mt-4 space-x-2">
+          {Object.entries(socialIcons).map(([social, Icon]) => {
+            const url = userData[social as keyof UserData] as string | null;
+            return url ? (
+              <a key={social} href={url} target="_blank" rel="noopener noreferrer">
+                <Icon className="h-5 w-5 text-gray-400 hover:text-white" />
+              </a>
+            ) : null;
+          })}
+        </div>
+      </div>
+    </div>
+    <Toaster/>
+  </main>
+);
+}
+
+{/*if (!userData) {
 return <div>Loading...</div>;
 }
 
@@ -448,7 +496,7 @@ return (
       </div>
     </div>
   </div>
-  {/* Skeletons for loading placeholders */}
+  {/* Skeletons for loading placeholders */}{/*
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
         <div>
           <Skeleton className="w-full h-32 mb-2" />
@@ -474,4 +522,4 @@ return (
       <Toaster/>
     </main>
   );
-}
+}*/}

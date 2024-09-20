@@ -7,20 +7,21 @@ import SidebarMenu from "@/components/SidebarMenu";
 import TopMenu from "@/components/TopMenu";
 import { createClient } from "@/utils/supabase/client";
 
-// Defina a interface para os props do componente
+// Atualize a interface para incluir activePage
 interface LayoutProps {
   pageTitle: string;
   children: ReactNode;
+  activePage?: string; // Adicionamos activePage como uma prop opcional
 }
 
-// Defina a interface para o usuário
+// Interface para o usuário
 interface User {
   id: string;
   // Adicione outros campos do usuário conforme necessário
 }
 
-// Use a interface no argumento do componente
-export default function Layout({ pageTitle, children }: LayoutProps) {
+// Use a interface atualizada no argumento do componente
+export default function Layout({ pageTitle, children, activePage }: LayoutProps) {
   const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
 
@@ -56,7 +57,7 @@ export default function Layout({ pageTitle, children }: LayoutProps) {
   return (
     <TooltipProvider>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <SidebarMenu />
+        <SidebarMenu activePage={activePage} /> {/* Passe activePage para o SidebarMenu */}
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           {user && <TopMenu pageTitle={pageTitle} userId={user.id} />}
           <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">

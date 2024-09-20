@@ -3,18 +3,28 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, Lightbulb, Settings, User, Calendar, Rocket } from "lucide-react";
+import { Users, Lightbulb, Settings, User, Calendar, Rocket, Briefcase } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 
-export default function SidebarMenu() {
+interface SidebarMenuProps {
+  activePage?: string;
+}
+
+export default function SidebarMenu({ activePage }: SidebarMenuProps) {
   const pathname = usePathname();
+
   const menuItems = [
     { href: "/profile", label: "Profile", icon: User },
     { href: "/community", label: "Community", icon: Users },
     { href: "/startup-ideas", label: "Startup Ideas", icon: Lightbulb },
+    { href: "/experts", label: "Experts", icon: Briefcase },
     { href: "/events", label: "Events", icon: Calendar },
     { href: "/settings", label: "Settings", icon: Settings },
   ];
+
+  const isActive = (href: string) => {
+    return activePage ? activePage === href.slice(1) : pathname === href;
+  };
 
   return (
     <TooltipProvider>
@@ -25,18 +35,18 @@ export default function SidebarMenu() {
           </Link>
         </div>
         <nav className="flex flex-col items-center gap-6 px-2 py-8">
-          {menuItems.slice(0, 4).map((item) => (
+          {menuItems.slice(0, 5).map((item) => (
             <Tooltip key={item.href}>
               <TooltipTrigger asChild>
                 <Link
                   href={item.href}
                   className={`group flex h-10 w-10 items-center justify-center rounded-md transition-all duration-200 ease-in-out ${
-                    pathname === item.href
+                    isActive(item.href)
                       ? "bg-white text-black"
                       : "text-gray-400 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <item.icon className={`h-5 w-5 ${pathname === item.href ? "text-black" : "text-current"}`} />
+                  <item.icon className={`h-5 w-5 ${isActive(item.href) ? "text-black" : "text-current"}`} />
                   <span className="sr-only">{item.label}</span>
                 </Link>
               </TooltipTrigger>
@@ -52,12 +62,12 @@ export default function SidebarMenu() {
               <Link
                 href="/settings"
                 className={`group flex h-10 w-10 items-center justify-center rounded-md transition-all duration-200 ease-in-out ${
-                  pathname === "/settings"
+                  isActive("/settings")
                     ? "bg-white text-black"
                     : "text-gray-400 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                <Settings className={`h-5 w-5 ${pathname === "/settings" ? "text-black" : "text-current"}`} />
+                <Settings className={`h-5 w-5 ${isActive("/settings") ? "text-black" : "text-current"}`} />
                 <span className="sr-only">Settings</span>
               </Link>
             </TooltipTrigger>
