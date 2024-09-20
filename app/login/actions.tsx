@@ -20,10 +20,13 @@ export async function emailLogin(formData: FormData) {
 
     if (error) {
         redirect('/login?message=Could not authenticate user')
-    }
+      }
 
-    revalidatePath('/', 'layout')
-    redirect('/onboarding')
+    // Removemos o redirecionamento direto para /onboarding
+  revalidatePath('/', 'layout')
+  
+  // Redirecionamos para a página de callback que fará a verificação
+  redirect('/auth/callback')
 }
 
 export async function signup(formData: FormData) {

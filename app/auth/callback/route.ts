@@ -3,11 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   console.log("Auth callback initiated");
-
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const origin = requestUrl.origin;
-
   console.log(`Received code: ${code ? 'Yes' : 'No'}`);
   console.log(`Origin: ${origin}`);
 
@@ -23,11 +21,11 @@ export async function GET(request: Request) {
 
       console.log("Successfully exchanged code for session");
 
-      // Optional: Update user profile
       if (data.session && data.session.user) {
         const { user } = data.session;
         console.log("User data:", user);
 
+        // Update user profile
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
@@ -45,9 +43,29 @@ export async function GET(request: Request) {
         } else {
           console.log("Profile updated successfully");
         }
+
+        // Check if the user has already completed onboarding
+        const { data: onboardingData, error: onboardingError } = await supabase
+          .from('onboarding_answers')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (onboardingError && onboardingError.code !== 'PGRST116') {
+          console.error("Error checking onboarding status:", onboardingError);
+        }
+
+        // Redirect based on onboarding status
+        if (onboardingData) {
+          console.log("User has completed onboarding, redirecting to profile");
+          return NextResponse.redirect(`${origin}/profile`);
+        } else {
+          console.log("User has not completed onboarding, redirecting to onboarding");
+          return NextResponse.redirect(`${origin}/onboarding`);
+        }
       }
 
-      // Redirect to profile page after successful authentication
+      // Fallback redirect if user data is not available
       return NextResponse.redirect(`${origin}/onboarding`);
     } catch (error) {
       console.error("Unexpected error during authentication:", error);
